@@ -6,7 +6,35 @@ import {BiPhoneCall} from 'react-icons/bi';
 import {AiOutlineMail} from 'react-icons/ai';
 import {BsInfoCircle} from 'react-icons/bs';
 import Container from '../components/Container';
+import * as Yup from 'yup';
+import {useDispatch,useSelector} from "react-redux"
+
+import {useFormik} from 'formik'
+import { createQuery } from '../features/contact/contactSlice';
+
+let contactSchema = Yup.object({
+  name:Yup.string().required("Name is Required"),
+  email: Yup.string().email("Email Should be valid").required("Email is Required"),
+  mobile:Yup.string().required("Mobile No is required"),
+  comment: Yup.string().required("Comment is Required"),
+});
 const Contact = () => {
+  const dispatch=useDispatch();
+  const formik = useFormik({
+    initialValues: {
+      name:"",
+      email: "",
+      mobile:"",
+      comment:""
+    },
+    validationSchema:contactSchema,
+    onSubmit:(values)=>{
+      console.log(values);
+      dispatch(createQuery(values));
+
+    }
+  
+  });
   return (
     <>
       <Meta title={"Contact Us"}/>
@@ -21,18 +49,31 @@ const Contact = () => {
               <div className='contact-inner-wrapper d-flex justify-content-between'>
                 <div>
                   <h3 className='contact-title mb-4'>Contact</h3>
-                  <form action='' className='d-flex flex-column gap-15'>
+                  <form action='' onSubmit={formik.handleSubmit} className='d-flex flex-column gap-15'>
                     <div>
-                      <input type="text" className='form-control' placeholder='Name'/>
+                      <input type="text" className='form-control' placeholder='Name' name="name" onChange={formik.handleChange("name")} onBlur={formik.handleBlur("name")} value={formik.values.name}/>
+                      <div className='error'>
+                          {formik.touched.name && formik.errors.name}
+                        </div>
                     </div>
                     <div>
-                      <input type="text" className='form-control' placeholder='Email'/>
+                      <input type="text" className='form-control' name="email" placeholder='Email' value={formik.values.email} onChange={formik.handleChange("email")} onBlur={formik.handleBlur("email")}/>
+                      <div className='error'>
+                          {formik.touched.email && formik.errors.email}
+                        </div>
                     </div>
                     <div>
-                      <input type="text" className='form-control' placeholder='Mobile Number'/>
+                      <input type="text" className='form-control' placeholder='Mobile Number' value={formik.values.mobile} onChange={formik.handleChange("mobile")} onBlur={formik.handleBlur("mobile")}/>
+                        <div className='error'>
+                          {formik.touched.mobile && formik.errors.mobile}
+                        </div>
+                   
                     </div>
                     <div>
-                      <textarea name="" id="" cols="30" rows="10" className='w-100 form-control' placeholder='Comment'/>
+                      <textarea name="" id="" cols="30" rows="10" className='w-100 form-control' placeholder='Comment' value={formik.values.comment} onChange={formik.handleChange("comment")} onBlur={formik.handleBlur("comment")}/>
+                      <div className='error'>
+                          {formik.touched.comment && formik.errors.comment}
+                      </div>
                     </div>
                     <div>
                       <button className='button'>Submit</button> 
@@ -80,5 +121,4 @@ const Contact = () => {
 }
 
 export default Contact
-
 

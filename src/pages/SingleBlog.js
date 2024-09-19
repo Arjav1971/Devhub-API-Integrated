@@ -1,25 +1,42 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import Meta from '../components/Meta';
 import BreadCrumb from '../components/BreadCrumb';
 import {HiOutlineArrowNarrowLeft} from 'react-icons/hi';
-import { Link } from 'react-router-dom';
+import { Link,useLocation } from 'react-router-dom';
 import blog from "../images/blog-1.jpg";
 import Container from '../components/Container';
+import {useDispatch,useSelector} from 'react-redux';
+import { getABlog } from '../features/blogs/blogSlice';
 const SingleBlog = () => {
+  const dispatch=useDispatch();
+  const location=useLocation();
+  const getBlogId=location.pathname.split("/")[2];
+  useEffect(()=>{
+    getBlog();
+  },[])
+  const getBlog=()=>{
+
+    dispatch(getABlog(getBlogId));
+  }
+  const blogState=useSelector((state)=>state?.blog?.singleBlog);
+  const blog=blogState ? blogState.getBlog :{};
+  
+  console.log("blogList",blog);
   return (
     <>
-      <Meta title={"Dynamic Blog Name"}/>
-      <BreadCrumb title="Dynamic Blog Name"/>
+      <Meta title={blog?.title}/>
+      <BreadCrumb title={blog?.title}/>
       <Container class1='blog-wrapper home-wrapper-2 py-5'>
 
             <div className='row'>
                 <div className='col-12'>
                     <div className='single-blog-card'>
                         <Link to="/blogs" className='d-flex align-items-center gap-10'><HiOutlineArrowNarrowLeft className='fs-5'/>Go back to Blogs</Link>
-                        <h4 className='title'>A Beautiful Sunday Renaissance</h4>
+                        <h4 className='title'>{blog?.title}</h4>
                         <img
-                        className='img-fluid w-100 my-4' src={blog} alt="blog"/>
-                        <p> You're only as good as your last collection, which is an enormous pressure. I think there is something about luxury it's not something people need, but it's what they want. It really pulls at their heart. I have a fantastic relationship with money.Scelerisque sociosqu ullamcorper urna nisl mollis vestibulum pretium commodo inceptos cum condimentum placerat diam venenatis blandit hac eget dis lacus a parturient a accumsan nisl ante vestibulum</p>
+                        className='img-fluid w-100 my-4' src={blog?.image} alt="blog"/>
+                        <p dangerouslySetInnerHTML={{__html:blog?.description}}></p>
+
 
                     </div>
                 </div>

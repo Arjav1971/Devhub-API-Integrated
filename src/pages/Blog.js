@@ -1,9 +1,23 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import BreadCrumb from '../components/BreadCrumb';
 import Meta from '../components/Meta';
 import BlogCard from '../components/BlogCard';
 import Container from '../components/Container';
+import {useDispatch,useSelector} from 'react-redux';
+import { getAllBlogs } from '../features/blogs/blogSlice';
+import moment from "moment";
 const Blog = () => {
+  const dispatch=useDispatch();
+  useEffect(()=>{
+    getBlogs();
+  },[])
+  const getBlogs=()=>{
+    dispatch(getAllBlogs());
+  }
+  const blogState=useSelector((state)=>state?.blog);
+  const blogList=blogState ? blogState.blog :[];
+  console.log("blogList",blogList);
+  
   return (
     <>
       <Meta title={"Blogs"}/>
@@ -27,22 +41,26 @@ const Blog = () => {
                 </div>
                 <div className='col-9'>
                     <div className='row'>
-                        <div className='col-6'>
-                            <BlogCard/>
-                        </div>
-                        <div className='col-6'>
-                            <BlogCard/>
-                        </div>
-                        <div className='col-6'>
-                            <BlogCard/>
-                        </div>
-                        <div className='col-6'>
-                            <BlogCard/>
-                        </div>
-                        
+                      
+                      {blogList &&
+                        blogList?.map((item,index)=>{
+                          return (
+                            <div className='col-6 mb-3' key={index}>
+                              <BlogCard id={item?._id}  
+                              description={item?.description} 
+                              image={item?.image}
+                              date={moment(item?.created_at).format("MMMM Do YYYY, h:mm a")}
+                              />
+
+                            </div> 
+
+                          )
+                        })
+                      }
+ 
                     </div>
                 </div>
-            </div>
+        </div>
 
       </Container>
  

@@ -1,4 +1,5 @@
-import React from 'react';
+import React,{useEffect} from 'react';
+
 import { Link } from 'react-router-dom';
 import Marquee from 'react-fast-marquee';
 import BlogCard from '../components/BlogCard';
@@ -6,7 +7,37 @@ import ProductCard from '../components/ProductCard';
 import SpecialProduct from '../components/SpecialProduct';
 import Container from '../components/Container';
 import { services } from '../utils/Data';
+import {useDispatch,useSelector} from 'react-redux';
+import { getAllBlogs } from '../features/blogs/blogSlice';
+import moment from "moment";
+import { getAllProducts } from '../features/products/productSlice';
 const Home = () => {
+  const dispatch=useDispatch();
+
+  const blogState=useSelector((state)=>state?.blog);
+  const productState=useSelector((state)=>state?.product.products);
+console.log(productState);
+  const blogList=blogState ? blogState.blog :[];
+  useEffect(()=>{
+    getBlogs();
+    getProducts();
+    
+  },[])
+
+  // useEffect(()=>{
+    
+    
+  // },[])
+  const getBlogs=()=>{
+    dispatch(getAllBlogs());
+  }
+
+
+  const getProducts=()=>{
+    dispatch(getAllProducts());
+  }
+
+  
   return (
     <>
     <Container class1='home-wrapper-1 py-5'>
@@ -163,34 +194,24 @@ const Home = () => {
             <div className='col-12'>
               <h3 className="section-heading">Featured Collection</h3>
             </div>
-              <ProductCard/>
-              <ProductCard/>
-              <ProductCard/>
-              <ProductCard/>
-      </div>
-
-    </Container>
-    <Container class1="special-wrapper py-5 home-wrapper-2">
-    <div className='row'>
-            <div className='col-12'>
-              <h3 className="section-heading">Special Products</h3>
-            </div>
+            
             <div className='row'>
+              {/* {productState && productState?.map((item,index)=>{
+               
+                  if(item.tags==="popular"){ */}
+                 <ProductCard data={productState?.filter(p => p.tags === "featured")} />
+
+         
+          
+          
+{/*               
               <SpecialProduct/>
               <SpecialProduct/>
-              <SpecialProduct/>
-              <SpecialProduct/>
+              <SpecialProduct/> */}
 
             </div>
-
-          </div>
-    </Container>
-    <Container class1="famous-wrapper py-5 home-wrapper-2">
-    <div className='row'>
-          <div className='col-12'>
-              <h3 className="section-heading">Our Popular Products</h3>
-            </div>
-            <div className='col-3'>
+            
+         <div className='col-3'>
               <div className='famous-card position-relative'>
                 <img src="images/famous15.jpg" className="img-fluid" alt="famous"/>
                 <div className='famous-content position-absolute'>
@@ -232,6 +253,52 @@ const Home = () => {
                   <p>From $699 or $116.58/mo for 12 mo.*</p>
                 </div>
               </div>
+
+            </div> 
+      </div>
+
+    </Container>
+    <Container class1="special-wrapper py-5 home-wrapper-2">
+    <div className='row'>
+            <div className='col-12'>
+              <h3 className="section-heading">Special Products</h3>
+            </div>
+            <div className='row'>
+              {productState && productState?.map((item,index)=>{
+                  if(item.tags==="special"){
+                  return <SpecialProduct id={item?._id} key={index} brand={item?.brand} title={item?.title} totalrating={item?.totalrating} price={item?.price} sold={item?.sold} quantity={item?.quantity}/>
+
+                  }
+          
+              })}
+{/*               
+              <SpecialProduct/>
+              <SpecialProduct/>
+              <SpecialProduct/> */}
+
+            </div>
+
+          </div>
+    </Container>
+    <Container class1="famous-wrapper py-5 home-wrapper-2">
+    <div className='row'>
+           <div className='col-12'>
+              <h3 className="section-heading">Our Popular Products</h3>
+            </div>
+      
+            <div className='row'>
+              {/* {productState && productState?.map((item,index)=>{
+               
+                  if(item.tags==="popular"){ */}
+                 <ProductCard data={productState?.filter(p => p.tags === "popular")} />
+
+         
+          
+          
+{/*               
+              <SpecialProduct/>
+              <SpecialProduct/>
+              <SpecialProduct/> */}
 
             </div>
            
@@ -283,19 +350,24 @@ const Home = () => {
             </div>
           </div>
           <div className='row'>
-            <div className='col-3'>
-              <BlogCard/>
-            </div>
-            <div className='col-3'>
-              <BlogCard/>
-            </div>
-            <div className='col-3'>
-              <BlogCard/>
-            </div>
-            <div className='col-3'>
-              <BlogCard/>
-            </div>
-              
+            {blogList &&
+            blogList?.map((item,index)=>{
+              if(index<3){
+                return (
+                  <div className='col-3' key={index}>
+                    <BlogCard id={item?._id}  
+                    description={item?.description} 
+                    image={item?.image}
+                    date={moment(item?.created_at).format("MMMM Do YYYY, h:mm a")}
+                    />
+
+                  </div> 
+
+                );
+              }
+              })
+              }
+          
               
           
 
