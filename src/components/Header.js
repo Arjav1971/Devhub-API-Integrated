@@ -37,9 +37,10 @@ const Header = () => {
     },[productState])
     console.log("Prod",productOpt)
     const handleLogout=()=>{
-        navigate("/")
+  
         localStorage.clear()
         window.location.reload()
+        navigate("/")
     }
   return (
     <>
