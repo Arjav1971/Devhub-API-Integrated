@@ -105,13 +105,15 @@ const Checkout = () => {
                 };
 
                 const result = await axios.post(`${base_url}/user/order/paymentVerification`, data,config);
-
-                setPaymentInfo({
-                    razorpayOrderId: response.razorpay_order_id,
-
-                    razorpayPaymentId: response.razorpay_payment_id,
-                })
-                dispatch(createAnOrder({totalPrice:totalAmount,totalPriceAfterDiscount:totalAmount,orderItems:cartProductState,paymentInfo,shippingInfo}))
+                if(result.success){
+                    setPaymentInfo({
+                        razorpayOrderId: response.razorpay_order_id,
+    
+                        razorpayPaymentId: response.razorpay_payment_id,
+                    })
+                    dispatch(createAnOrder({totalPrice:totalAmount,totalPriceAfterDiscount:totalAmount,orderItems:cartProductState,paymentInfo,shippingInfo}))
+                }
+  
             },
             prefill: {
                 name: "Devhub",
