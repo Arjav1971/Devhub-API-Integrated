@@ -74,23 +74,21 @@ const Checkout = () => {
         setCartProductState(items)
     },[])
     console.log("CartProduct",cartProductState)
-
-    const checkOutHandler=async()=>{
-        const res =await loadScript("https://checkout.razorpay.com/v1/checkout.js")
-        if(!res){
-            alert("Razorpay SDK failed to Load")
+    const checkOutHandler = async () => {
+        const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
+        if (!res) {
+            alert("Razorpay SDK failed to Load");
             return;
         }
-        const result=await axios.post(`${base_url}/user/order/checkout`,{amount:totalAmount+5},config)
-        console.log("Result",result);
-        if(!result){
-            alert("Something Went Wrong")
+        const result = await axios.post(`${base_url}/user/order/checkout`, { amount: totalAmount + 5 }, config);
+        if (!result) {
+            alert("Something Went Wrong");
             return;
         }
-        const {amount,id:order_id,currency}=result.data.order
-        // console.log("result",result);
+        const { amount, id: order_id, currency } = result.data.order;
+    
         const options = {
-            key: "rzp_test_BcjUMgUEAV6tpq", // Enter the Key ID generated from the Dashboard
+            key: "rzp_test_BcjUMgUEAV6tpq", 
             amount: amount,
             currency: currency,
             name: "Devhub.",
@@ -103,18 +101,30 @@ const Checkout = () => {
                     razorpayOrderId: response.razorpay_order_id,
                     razorpaySignature: response.razorpay_signature,
                 };
-
-                const result = await axios.post(`${base_url}/user/order/paymentVerification`, data,config);
-                console.log("result",result);
-                if(result.success){
+    
+                const paymentResult = await axios.post(`${base_url}/user/order/paymentVerification`, data, config);
+    
+                if (paymentResult.data.success) {
+                    // Update the paymentInfo after successful payment
                     setPaymentInfo({
                         razorpayOrderId: response.razorpay_order_id,
-    
                         razorpayPaymentId: response.razorpay_payment_id,
-                    })
-                    dispatch(createAnOrder({totalPrice:totalAmount,totalPriceAfterDiscount:totalAmount,orderItems:cartProductState,paymentInfo,shippingInfo}))
+                    });
+    
+                    // Ensure paymentInfo is updated, then call createAnOrder
+                    setTimeout(() => {
+                        dispatch(createAnOrder({
+                            totalPrice: totalAmount,
+                            totalPriceAfterDiscount: totalAmount,
+                            orderItems: cartProductState,
+                            paymentInfo: {
+                                razorpayOrderId: response.razorpay_order_id,
+                                razorpayPaymentId: response.razorpay_payment_id,
+                            },
+                            shippingInfo:shippingInfo,
+                        }));
+                    }, 500);
                 }
-  
             },
             prefill: {
                 name: "Devhub",
@@ -128,10 +138,11 @@ const Checkout = () => {
                 color: "#61dafb",
             },
         };
-        
+    
         const paymentObject = new window.Razorpay(options);
         paymentObject.open();
-    }
+    };
+    
     console.log("cart",cartState)
     useEffect(()=>{
         let sum=0;
