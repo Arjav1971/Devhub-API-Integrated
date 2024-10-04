@@ -10,6 +10,7 @@ import axios from 'axios';
 import { config } from '../utils/axiosConfig';
 import { createActionCreatorInvariantMiddleware } from '@reduxjs/toolkit';
 import { createAnOrder } from '../features/user/userSlice';
+import { base_url } from '../utils/base_url';
 let shippingSchema = Yup.object({
     firstName:Yup.string().required("First Name is Required"),
     lastName:Yup.string().required("Last Name is Required"),
@@ -80,7 +81,7 @@ const Checkout = () => {
             alert("Razorpay SDK failed to Load")
             return;
         }
-        const result=await axios.post("http://localhost:3000/api/user/order/checkout",{amount:totalAmount+5},config)
+        const result=await axios.post(`${base_url}/user/order/checkout`,{amount:totalAmount+5},config)
         console.log("Result",result);
         if(!result){
             alert("Something Went Wrong")
@@ -103,7 +104,7 @@ const Checkout = () => {
                     razorpaySignature: response.razorpay_signature,
                 };
 
-                const result = await axios.post("http://localhost:3000/api/user/order/paymentVerification", data,config);
+                const result = await axios.post(`${base_url}/user/order/paymentVerification`, data,config);
 
                 setPaymentInfo({
                     razorpayOrderId: response.razorpay_order_id,
