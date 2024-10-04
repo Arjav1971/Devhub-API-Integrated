@@ -105,6 +105,7 @@ const Checkout = () => {
                 };
 
                 const result = await axios.post(`${base_url}/user/order/paymentVerification`, data,config);
+                console.log("result",result);
                 if(result.success){
                     setPaymentInfo({
                         razorpayOrderId: response.razorpay_order_id,
